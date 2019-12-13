@@ -2,7 +2,7 @@
 using Microsoft.Data.SqlClient;
 using StudentExercisesContinued.models;
 
-namespace StudentExercisesContinued.Data
+namespace StudentExercisesAPI.Data
 {
     /// <summary>
     ///  An object to contain all database interactions.

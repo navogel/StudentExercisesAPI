@@ -2,7 +2,7 @@
 
 using System.Collections.Generic;
 
-namespace StudentExercisesContinued.models
+namespace StudentExercisesAPI.models
 {
     public class Exercise
     {

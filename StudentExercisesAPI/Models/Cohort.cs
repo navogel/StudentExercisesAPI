@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using StudentExercisesContinued.models;
 
-namespace StudentExercisesContinued.models
+namespace StudentExercisesAPI.models
 {
     public class Cohort
     {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 
-namespace StudentExercisesContinued.models
+namespace StudentExercisesAPI.models
 {
     public class Student 
     {
@@ -27,10 +27,10 @@ namespace StudentExercisesContinued.models
 
         //public Cohort StudentCohort { get; set; }
 
-        
 
-        //collection of excercises
-        //public List<Exercise> StudentsExercises = new List<Exercise>();
+
+        collection of excercises
+        public List<Exercise> StudentsExercises = new List<Exercise>();
 
     }
 
