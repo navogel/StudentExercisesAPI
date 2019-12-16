@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using StudentExercisesContinued.models;
 
-namespace StudentExercisesAPI.models
+
+namespace StudentExercisesAPI.Models
 {
     public class Cohort
     {
@@ -18,8 +18,8 @@ namespace StudentExercisesAPI.models
         public int Id { get; set; }
 
 
-        //public List<Student> StudentsInCohort = new List<Student>();
-        //public List<Instructor> InstructorsInCohort = new List<Instructor>();
+        public List<Student> StudentsInCohort = new List<Student>();
+        public List<Instructor> InstructorsInCohort = new List<Instructor>();
 
         //public Student AddNewStudent(string first, string last, string slack) 
         //{

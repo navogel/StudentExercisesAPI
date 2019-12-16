@@ -1,5 +1,5 @@
 
-namespace StudentExercisesAPI.models
+namespace StudentExercisesAPI.Models
 {
 public class NSSPerson
 {

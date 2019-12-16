@@ -9,7 +9,7 @@ using Microsoft.Data.SqlClient;
 using StudentExercisesAPI.Models;
 using Microsoft.AspNetCore.Http;
 
-namespace Student.Controllers
+namespace StudentExercisesAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -31,24 +31,54 @@ namespace Student.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get(int? cohortId)
+        public async Task<IActionResult> Get([FromQuery]int? cohortId, [FromQuery]string lastName)
         {
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT Id, Title, BeanType FROM Student";
+                    cmd.CommandText = @"SELECT c.Id AS CohortId, c.Name AS CohortName, s.Id, s.FirstName, s.LastName, s.SlackHandle, e.Name, e.Language, i.Id AS InstructorId, i.[FirstName] as InstructorFirst, i.LastName as InstructorLast FROM Student s
+                                        LEFT JOIN Instructor i ON s.CohortId = i.CohortId
+                                        LEFT JOIN StudentExercise se ON se.StudentId = s.Id
+                                        LEFT JOIN Exercise e ON e.Id = se.ExerciseId
+                                        LEFT JOIN Cohort c ON s.CohortId = c.Id
+
+                                        WHERE 1=1
+                                        GROUP BY c.Id, c.Name, s.Id, s.FirstName, s.LastName, s.SlackHandle, e.Name, e.Language, i.Id, i.FirstName, i.LastName;";
+                                           
+                    //if (cohortId != null)
+                    //{
+                    //    cmd.CommandText += " AND CohortId = @cohortId";
+                    //    cmd.Parameters.Add(new SqlParameter(@"CohortId", cohortId));
+                    //}
+
+                    //if (lastName != null)
+                    //{
+                    //    cmd.CommandText += " AND LastName LIKE @LastName";
+                    //    cmd.Parameters.Add(new SqlParameter(@"LastName", "%" + lastName + "%"));
+                    //}
+                    
+                    
+
                     SqlDataReader reader = cmd.ExecuteReader();
+
                     List<Student> students = new List<Student>();
+                    List<Cohort> cohorts = new List<Cohort>();
 
                     while (reader.Read())
                     {
+                        var CohortId = reader.GetInt32(reader.GetOrdinal("CohortId"));
+                        var cohortAlreadyAdded = cohorts.FirstOrDefault(c => c.Id == cohortId);
+
+                        
                         Student student = new Student
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            Title = reader.GetString(reader.GetOrdinal("Title")),
-                            BeanType = reader.GetString(reader.GetOrdinal("BeanType"))
+                            CohortId = reader.GetInt32(reader.GetOrdinal("CohortId")),
+                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                            FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                            SlackHandle = reader.GetString(reader.GetOrdinal("SlackHandle"))
                         };
 
                         students.Add(student);
@@ -59,6 +89,55 @@ namespace Student.Controllers
                 }
             }
         }
+        //working 
+        //[HttpGet]
+        //public async Task<IActionResult> Get([FromQuery]int? cohortId, [FromQuery]string lastName)
+        //{
+        //    using (SqlConnection conn = Connection)
+        //    {
+        //        conn.Open();
+        //        using (SqlCommand cmd = conn.CreateCommand())
+        //        {
+        //            cmd.CommandText = @"SELECT Id, FirstName, LastName, SlackHandle, CohortId FROM Student
+        //                                WHERE 1=1";
+
+        //            if (cohortId != null)
+        //            {
+        //                cmd.CommandText += " AND CohortId = @cohortId";
+        //                cmd.Parameters.Add(new SqlParameter(@"CohortId", cohortId));
+        //            }
+
+        //            if (lastName != null)
+        //            {
+        //                cmd.CommandText += " AND LastName LIKE @LastName";
+        //                cmd.Parameters.Add(new SqlParameter(@"LastName", "%" + lastName + "%"));
+        //            }
+
+
+
+        //            SqlDataReader reader = cmd.ExecuteReader();
+
+        //            List<Student> students = new List<Student>();
+
+        //            while (reader.Read())
+        //            {
+        //                Student student = new Student
+        //                {
+        //                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+        //                    CohortId = reader.GetInt32(reader.GetOrdinal("CohortId")),
+        //                    LastName = reader.GetString(reader.GetOrdinal("LastName")),
+        //                    FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+        //                    SlackHandle = reader.GetString(reader.GetOrdinal("SlackHandle"))
+        //                };
+
+        //                students.Add(student);
+        //            }
+        //            reader.Close();
+        //            //from controllerbase interface - returns official json result with 200 status code
+        //            return Ok(students);
+        //        }
+        //    }
+        //}
 
         //[HttpGet("{id}", Name = "GetStudent")]
         //public async Task<IActionResult> Get([FromRoute] int id)

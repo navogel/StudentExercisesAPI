@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace StudentExercisesAPI.models
+namespace StudentExercisesAPI.Models
 
 {
     public class Instructor : NSSPerson

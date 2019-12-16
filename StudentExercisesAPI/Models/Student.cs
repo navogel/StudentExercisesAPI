@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 
 
-namespace StudentExercisesAPI.models
+namespace StudentExercisesAPI.Models
 {
-    public class Student 
+    public class Student
     {
 
         //public Student(string first, string last, string slack)
@@ -23,13 +23,15 @@ namespace StudentExercisesAPI.models
 
         public int CohortId { get; set; }
 
+        public Cohort studentCohort {get; set;}
+
 
 
         //public Cohort StudentCohort { get; set; }
 
 
 
-        collection of excercises
+        //collection of excercises
         public List<Exercise> StudentsExercises = new List<Exercise>();
 
     }
