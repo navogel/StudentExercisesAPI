@@ -31,7 +31,7 @@ namespace StudentExercisesAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery]int? cohortId, [FromQuery]string lastName)
+        public async Task<IActionResult> Get([FromQuery]string firstName, [FromQuery]string lastName, [FromQuery] string slackHandle, [FromQuery] string include)
         {
             using (SqlConnection conn = Connection)
             {
@@ -46,16 +46,22 @@ namespace StudentExercisesAPI.Controllers
 
                                         WHERE 1=1";
 
-                    if (cohortId != null)
+                    if (firstName != null)
                     {
-                        cmd.CommandText += " AND CohortId = @cohortId";
-                        cmd.Parameters.Add(new SqlParameter(@"CohortId", cohortId));
+                        cmd.CommandText += " AND s.FirstName LIKE @FirstName";
+                        cmd.Parameters.Add(new SqlParameter(@"FirstName", firstName));
                     }
 
                     if (lastName != null)
                     {
-                        cmd.CommandText += " AND LastName LIKE @LastName";
+                        cmd.CommandText += " AND s.LastName LIKE @LastName";
                         cmd.Parameters.Add(new SqlParameter(@"LastName", "%" + lastName + "%"));
+                    }
+
+                    if (slackHandle != null)
+                    {
+                        cmd.CommandText += " AND s.SlackHandle LIKE @SlackHandle";
+                        cmd.Parameters.Add(new SqlParameter(@"SlackHandle", "%" + slackHandle + "%"));
                     }
 
 
@@ -102,7 +108,7 @@ namespace StudentExercisesAPI.Controllers
                             var exerciseAlreadyAdded = student.StudentsExercises.FirstOrDefault(se => se.Id == exerciseId);
                             
                             //look for having an exercise and it has not been added
-                            if (hasExercise && exerciseAlreadyAdded == null )
+                            if (hasExercise && exerciseAlreadyAdded == null && include == "exercises")
                             {
                                 student.StudentsExercises.Add(new Exercise()
                                 {
@@ -120,7 +126,7 @@ namespace StudentExercisesAPI.Controllers
                         {
                             var exerciseId = reader.GetInt32(reader.GetOrdinal("ExerciseId"));
                             var exerciseAlreadyAdded = studentAlreadyAdded.StudentsExercises.FirstOrDefault(se => se.Id == exerciseId);
-                            if (hasExercise && exerciseAlreadyAdded == null)
+                            if (hasExercise && exerciseAlreadyAdded == null && include == "exercises")
                             {
                                 studentAlreadyAdded.StudentsExercises.Add(new Exercise()
                                 {
