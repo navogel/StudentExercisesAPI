@@ -3,12 +3,17 @@
 --SELECT Id, FirstName, LastName, SlackHandle, CohortId FROM Student
 --                                        WHERE 1=1 AND LastName = 'Jones';
 
- SELECT c.Id AS CohortId, c.Name AS CohortName, s.Id, s.FirstName, s.LastName, s.SlackHandle, e.Name, e.Language, i.Id AS InstructorId, i.[FirstName] as InstructorFirst, i.LastName as InstructorLast FROM Student s
+ SELECT c.Id AS CohortId, c.Name AS CohortName, s.Id, s.FirstName, s.LastName, s.SlackHandle, e.Id AS ExerciseId, e.Name, e.Language, i.Id AS InstructorId, i.[FirstName] AS InstructorFirst, i.LastName AS InstructorLast, st.Id AS CstudentId, st.FirstName AS CstudentFirst, st.LastName AS CstudentLast FROM Student s
 LEFT JOIN Instructor i ON s.CohortId = i.CohortId
 LEFT JOIN StudentExercise se ON se.StudentId = s.Id
 LEFT JOIN Exercise e ON e.Id = se.ExerciseId
 LEFT JOIN Cohort c ON s.CohortId = c.Id
+LEFT JOIN Student st ON c.Id = st.CohortId
 
 WHERE 1=1
-GROUP BY c.Id, c.Name, s.Id, s.FirstName, s.LastName, s.SlackHandle, e.Name, e.Language, i.Id, i.FirstName, i.LastName;
+--GROUP BY c.Id, c.Name, s.Id, s.FirstName, s.LastName, s.SlackHandle, e.Name, e.Language, i.Id, i.FirstName, i.LastName;
 
+--SELECT s.Id AS StudentId, s.FirstName, s.LastName, s.SlackHandle, c.Id AS CohortId, c.Name AS CohortName, e.Id AS ExerciseId, e.Name AS ExerciseName, e.Language FROM Student s 
+--                                        INNER JOIN Cohort c ON s.CohortId = c.Id
+--                                        LEFT JOIN StudentExercise se ON s.Id = se.StudentId
+--                                        LEFT JOIN Exercise e ON e.Id = se.ExerciseId 

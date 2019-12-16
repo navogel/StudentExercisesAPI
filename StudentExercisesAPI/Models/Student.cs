@@ -23,8 +23,13 @@ namespace StudentExercisesAPI.Models
 
         public int CohortId { get; set; }
 
-        public Cohort studentCohort {get; set;}
+        public Cohort Cohort {get; set;}
 
+        //public Student()
+        //{
+        //    Cohort = new Cohort();
+
+        //}
 
 
         //public Cohort StudentCohort { get; set; }
@@ -32,7 +37,7 @@ namespace StudentExercisesAPI.Models
 
 
         //collection of excercises
-        public List<Exercise> StudentsExercises = new List<Exercise>();
+        public List<Exercise> StudentsExercises {get; set;}
 
     }
 

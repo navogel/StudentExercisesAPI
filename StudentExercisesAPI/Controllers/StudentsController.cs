@@ -38,50 +38,99 @@ namespace StudentExercisesAPI.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT c.Id AS CohortId, c.Name AS CohortName, s.Id, s.FirstName, s.LastName, s.SlackHandle, e.Name, e.Language, i.Id AS InstructorId, i.[FirstName] as InstructorFirst, i.LastName as InstructorLast FROM Student s
+                    cmd.CommandText = @"SELECT c.Id AS CohortId, c.Name AS CohortName, s.Id, s.FirstName, s.LastName, s.SlackHandle, e.Id AS ExerciseId, e.Name, e.Language, i.Id AS InstructorId, i.[FirstName] as InstructorFirst, i.LastName as InstructorLast FROM Student s
                                         LEFT JOIN Instructor i ON s.CohortId = i.CohortId
                                         LEFT JOIN StudentExercise se ON se.StudentId = s.Id
                                         LEFT JOIN Exercise e ON e.Id = se.ExerciseId
                                         LEFT JOIN Cohort c ON s.CohortId = c.Id
 
-                                        WHERE 1=1
-                                        GROUP BY c.Id, c.Name, s.Id, s.FirstName, s.LastName, s.SlackHandle, e.Name, e.Language, i.Id, i.FirstName, i.LastName;";
-                                           
-                    //if (cohortId != null)
-                    //{
-                    //    cmd.CommandText += " AND CohortId = @cohortId";
-                    //    cmd.Parameters.Add(new SqlParameter(@"CohortId", cohortId));
-                    //}
+                                        WHERE 1=1";
 
-                    //if (lastName != null)
-                    //{
-                    //    cmd.CommandText += " AND LastName LIKE @LastName";
-                    //    cmd.Parameters.Add(new SqlParameter(@"LastName", "%" + lastName + "%"));
-                    //}
-                    
-                    
+                    if (cohortId != null)
+                    {
+                        cmd.CommandText += " AND CohortId = @cohortId";
+                        cmd.Parameters.Add(new SqlParameter(@"CohortId", cohortId));
+                    }
+
+                    if (lastName != null)
+                    {
+                        cmd.CommandText += " AND LastName LIKE @LastName";
+                        cmd.Parameters.Add(new SqlParameter(@"LastName", "%" + lastName + "%"));
+                    }
+
+
 
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     List<Student> students = new List<Student>();
-                    List<Cohort> cohorts = new List<Cohort>();
+                    
 
                     while (reader.Read())
                     {
-                        var CohortId = reader.GetInt32(reader.GetOrdinal("CohortId"));
-                        var cohortAlreadyAdded = cohorts.FirstOrDefault(c => c.Id == cohortId);
-
-                        
-                        Student student = new Student
+                        //create student ID
+                        var studentId = reader.GetInt32(reader.GetOrdinal("Id"));
+                        //create bool for if student is added
+                        var studentAlreadyAdded = students.FirstOrDefault(s => s.Id == studentId);
+                       //create bool for if there is an exercise in row
+                        var hasExercise = !reader.IsDBNull(reader.GetOrdinal("ExerciseId"));
+                        //if for new student
+                        if (studentAlreadyAdded == null)
                         {
-                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            CohortId = reader.GetInt32(reader.GetOrdinal("CohortId")),
-                            LastName = reader.GetString(reader.GetOrdinal("LastName")),
-                            FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
-                            SlackHandle = reader.GetString(reader.GetOrdinal("SlackHandle"))
-                        };
 
-                        students.Add(student);
+                            Student student = new Student
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                CohortId = reader.GetInt32(reader.GetOrdinal("CohortId")),
+                                LastName = reader.GetString(reader.GetOrdinal("LastName")),
+                                FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+                                SlackHandle = reader.GetString(reader.GetOrdinal("SlackHandle")),
+                                StudentsExercises = new List<Exercise>(),
+                                Cohort = new Cohort()
+                                {
+                                    Name = reader.GetString(reader.GetOrdinal("CohortName")),
+                                    Id = reader.GetInt32(reader.GetOrdinal("CohortId")),
+                                    StudentsInCohort = new List<Student>(),
+                                    InstructorsInCohort = new List<Instructor>()
+                                }
+
+                            };
+                            students.Add(student);
+
+
+
+                            var exerciseId = reader.GetInt32(reader.GetOrdinal("ExerciseId"));
+                            var exerciseAlreadyAdded = student.StudentsExercises.FirstOrDefault(se => se.Id == exerciseId);
+                            
+                            //look for having an exercise and it has not been added
+                            if (hasExercise && exerciseAlreadyAdded == null )
+                            {
+                                student.StudentsExercises.Add(new Exercise()
+                                {
+                                    Id = reader.GetInt32(reader.GetOrdinal("ExerciseId")),
+                                    Name = reader.GetString(reader.GetOrdinal("Name")),
+                                    Language = reader.GetString(reader.GetOrdinal("Language"))
+                                });
+
+                            }
+
+
+                            
+                        }
+                        else
+                        {
+                            var exerciseId = reader.GetInt32(reader.GetOrdinal("ExerciseId"));
+                            var exerciseAlreadyAdded = studentAlreadyAdded.StudentsExercises.FirstOrDefault(se => se.Id == exerciseId);
+                            if (hasExercise && exerciseAlreadyAdded == null)
+                            {
+                                studentAlreadyAdded.StudentsExercises.Add(new Exercise()
+                                {
+                                    Id = reader.GetInt32(reader.GetOrdinal("ExerciseId")),
+                                    Name = reader.GetString(reader.GetOrdinal("Name")),
+                                    Language = reader.GetString(reader.GetOrdinal("Language"))
+                                });
+
+                            }
+                        }
                     }
                     reader.Close();
                     //from controllerbase interface - returns official json result with 200 status code

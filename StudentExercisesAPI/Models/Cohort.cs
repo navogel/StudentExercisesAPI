@@ -7,10 +7,10 @@ namespace StudentExercisesAPI.Models
     {
 
         //constructor-bot
-        public Cohort(string name)
-        {
-            Name = name;
-        }
+        //public Cohort(string name)
+        //{
+        //    Name = name;
+        //}
 
         //properties
         public string Name { get; set; }
@@ -18,8 +18,8 @@ namespace StudentExercisesAPI.Models
         public int Id { get; set; }
 
 
-        public List<Student> StudentsInCohort = new List<Student>();
-        public List<Instructor> InstructorsInCohort = new List<Instructor>();
+        public List<Student> StudentsInCohort { get; set; }
+        public List<Instructor> InstructorsInCohort { get; set; }
 
         //public Student AddNewStudent(string first, string last, string slack) 
         //{
