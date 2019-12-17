@@ -90,7 +90,7 @@ namespace StudentExercisesAPI.Controllers
                                 LastName = reader.GetString(reader.GetOrdinal("LastName")),
                                 FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
                                 SlackHandle = reader.GetString(reader.GetOrdinal("SlackHandle")),
-                                StudentsExercises = new List<Exercise>(),
+                                //StudentsExercises = new List<Exercise>(),
                                 Cohort = new Cohort()
                                 {
                                     Name = reader.GetString(reader.GetOrdinal("CohortName")),
@@ -103,9 +103,12 @@ namespace StudentExercisesAPI.Controllers
                             students.Add(student);
 
 
-
+                            student.StudentsExercises = new List<Exercise>();
                             var exerciseId = reader.GetInt32(reader.GetOrdinal("ExerciseId"));
-                            var exerciseAlreadyAdded = student.StudentsExercises.FirstOrDefault(se => se.Id == exerciseId);
+                            if (include == "exercises")
+                            {
+                                var exerciseAlreadyAdded = student.StudentsExercises.FirstOrDefault(se => se.Id == exerciseId);
+                            }
                             
                             //look for having an exercise and it has not been added
                             if (hasExercise && exerciseAlreadyAdded == null && include == "exercises")
