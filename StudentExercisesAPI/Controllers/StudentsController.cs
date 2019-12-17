@@ -75,11 +75,11 @@ namespace StudentExercisesAPI.Controllers
                     {
                         //create student ID
                         var studentId = reader.GetInt32(reader.GetOrdinal("Id"));
-                        //create bool for if student is added
+                        //search to see if student is already added
                         var studentAlreadyAdded = students.FirstOrDefault(s => s.Id == studentId);
                        //create bool for if there is an exercise in row
                         var hasExercise = !reader.IsDBNull(reader.GetOrdinal("ExerciseId"));
-                        //if for new student
+                        //if statement for adding new student, null means they were NOT found, let's add them!
                         if (studentAlreadyAdded == null)
                         {
 
@@ -102,11 +102,7 @@ namespace StudentExercisesAPI.Controllers
                             };
                             students.Add(student);
 
-
-
-                            
-                            
-                            //look for having an exercise and it has not been added
+                            //If row has an exercise AND the query param "include" = exercises, then add it to the exercise list
                             if (hasExercise && include == "exercises")
                             {
                                 student.StudentsExercises.Add(new Exercise()
@@ -117,11 +113,9 @@ namespace StudentExercisesAPI.Controllers
                                 });
 
                             }
-
-
-                            
                         }
                         else
+                        //Student was already added!  Lets check to see if there are exercises to add.
                         {
                             
 
