@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-
+using System.ComponentModel.DataAnnotations;
 
 namespace StudentExercisesAPI.Models
 {
@@ -14,12 +14,16 @@ namespace StudentExercisesAPI.Models
 
 
         //}
-
+        [Required]
         public string FirstName { get; set; }
+        [Required]
         public string LastName { get; set; }
+        [Required]
         public string SlackHandle { get; set; }
 
         public int Id { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Please enter a value bigger than {1}")]
 
         public int CohortId { get; set; }
 

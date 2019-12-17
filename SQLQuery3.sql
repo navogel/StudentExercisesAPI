@@ -28,4 +28,4 @@ LEFT JOIN Exercise e ON e.Id = se.ExerciseId
 LEFT JOIN Cohort c ON s.CohortId = c.Id
 
 
-WHERE s.Id = 1;
+WHERE 1=1;

@@ -104,11 +104,10 @@ namespace StudentExercisesAPI.Controllers
 
 
 
-                            var exerciseId = reader.GetInt32(reader.GetOrdinal("ExerciseId"));
-                            var exerciseAlreadyAdded = student.StudentsExercises.FirstOrDefault(se => se.Id == exerciseId);
+                            
                             
                             //look for having an exercise and it has not been added
-                            if (hasExercise && exerciseAlreadyAdded == null && include == "exercises")
+                            if (hasExercise && include == "exercises")
                             {
                                 student.StudentsExercises.Add(new Exercise()
                                 {
@@ -124,10 +123,9 @@ namespace StudentExercisesAPI.Controllers
                         }
                         else
                         {
-                            var exerciseId = reader.GetInt32(reader.GetOrdinal("ExerciseId"));
-                            var exerciseAlreadyAdded = studentAlreadyAdded.StudentsExercises.FirstOrDefault(se => se.Id == exerciseId);
+                            
 
-                            if (hasExercise && exerciseAlreadyAdded == null && include == "exercises")
+                            if (hasExercise && include == "exercises")
                             {
                                 studentAlreadyAdded.StudentsExercises.Add(new Exercise()
                                 {
@@ -199,26 +197,28 @@ namespace StudentExercisesAPI.Controllers
             }
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> Post([FromBody] Student student)
-        //{
-        //    using (SqlConnection conn = Connection)
-        //    {
-        //        conn.Open();
-        //        using (SqlCommand cmd = conn.CreateCommand())
-        //        {
-        //            cmd.CommandText = @"INSERT INTO Student (Title, BeanType)
-        //                                OUTPUT INSERTED.Id
-        //                                VALUES (@title, @beanType)";
-        //            cmd.Parameters.Add(new SqlParameter("@title", student.Title));
-        //            cmd.Parameters.Add(new SqlParameter("@beanType", student.BeanType));
+        [HttpPost]
+        public async Task<IActionResult> Post([FromBody] Student student)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"INSERT INTO Student (FirstName, LastName, SlackHandle, CohortId)
+                                        OUTPUT INSERTED.Id
+                                        VALUES (@FirstName, @LastName, @SlackHandle, @CohortId)";
+                    cmd.Parameters.Add(new SqlParameter("@FirstName", student.FirstName));
+                    cmd.Parameters.Add(new SqlParameter("@LastName", student.LastName));
+                    cmd.Parameters.Add(new SqlParameter("@SlackHandle", student.SlackHandle));
+                    cmd.Parameters.Add(new SqlParameter("@CohortId", student.CohortId));
 
-        //            int newId = (int)cmd.ExecuteScalar();
-        //            student.Id = newId;
-        //            return CreatedAtRoute("GetStudent", new { id = newId }, student);
-        //        }
-        //    }
-        //}
+                    int newId = (int) await cmd.ExecuteScalarAsync();
+                    student.Id = newId;
+                    return CreatedAtRoute("GetStudent", new { id = newId }, student);
+                }
+            }
+        }
 
         //[HttpPut("{id}")]
         //public async Task<IActionResult> Put([FromRoute] int id, [FromBody] Student student)
