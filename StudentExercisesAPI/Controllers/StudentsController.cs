@@ -38,7 +38,7 @@ namespace StudentExercisesAPI.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"SELECT c.Id AS CohortId, c.Name AS CohortName, s.Id, s.FirstName, s.LastName, s.SlackHandle, e.Id AS ExerciseId, e.Name, e.Language FROM Student s
+                    cmd.CommandText = @"SELECT s.Id, s.FirstName, s.LastName, s.SlackHandle, c.Id AS CohortId, c.Name AS CohortName,  e.Id AS ExerciseId, e.Name, e.Language FROM Student s
                                         LEFT JOIN StudentExercise se ON se.StudentId = s.Id
                                         LEFT JOIN Exercise e ON e.Id = se.ExerciseId
                                         LEFT JOIN Cohort c ON s.CohortId = c.Id
@@ -90,7 +90,7 @@ namespace StudentExercisesAPI.Controllers
                                 LastName = reader.GetString(reader.GetOrdinal("LastName")),
                                 FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
                                 SlackHandle = reader.GetString(reader.GetOrdinal("SlackHandle")),
-                                StudentsExercises = new List<Exercise>(),
+                               // StudentsExercises = new List<Exercise>(),
                                 Cohort = new Cohort()
                                 {
                                     Name = reader.GetString(reader.GetOrdinal("CohortName")),
@@ -138,6 +138,15 @@ namespace StudentExercisesAPI.Controllers
             }
         }
 
+        //temp test for shortening a get
+        //[HttpGet]
+        //public async Task<IActionResult> Get([FromQuery] string include)
+        //{
+        //    var students = await GetAllStudents();
+        //    return Ok(students);
+        //}
+
+
 
         [HttpGet("{id}", Name = "GetStudent")]
         public async Task<IActionResult> Get([FromRoute] int id)
@@ -148,7 +157,7 @@ namespace StudentExercisesAPI.Controllers
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                        SELECT c.Id AS CohortId, c.Name AS CohortName, s.Id, s.FirstName, s.LastName, s.SlackHandle, e.Id AS ExerciseId, e.Name, e.Language FROM Student s
+                        SELECT s.Id, s.FirstName, s.LastName, s.SlackHandle, c.Id AS CohortId, c.Name AS CohortName,  e.Id AS ExerciseId, e.Name, e.Language FROM Student s
                                         LEFT JOIN StudentExercise se ON se.StudentId = s.Id
                                         LEFT JOIN Exercise e ON e.Id = se.ExerciseId
                                         LEFT JOIN Cohort c ON s.CohortId = c.Id
@@ -311,5 +320,77 @@ namespace StudentExercisesAPI.Controllers
                 }
             }
         }
+
+        //private async Task<List<Student>> GetStudentsWithExercises()
+        //{
+        //    using (SqlConnection conn = Connection)
+        //    {
+        //        conn.Open();
+        //        using (SqlCommand cmd = conn.CreateCommand())
+        //        {
+        //            cmd.CommandText = @"
+        //                    SELECT s.id, s.FirstName, s.LastName, s.SlackHandle, s.CohortId, e.[Name], e.Id as ExerciseId, e.Language
+        //                    FROM Student s
+        //                    LEFT JOIN StudentExercise se ON s.Id = se.StudentId
+        //                    LEFT JOIN Exercise e ON se.ExerciseId = e.Id
+        //                    ";
+
+        //            SqlDataReader reader = await cmd.ExecuteReaderAsync();
+
+        //            var students = new List<Student>();
+
+        //            while (reader.Read())
+        //            {
+        //                students.Add(new Student
+        //                {
+        //                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+        //                    CohortId = reader.GetInt32(reader.GetOrdinal("CohortId")),
+        //                    FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+        //                    LastName = reader.GetString(reader.GetOrdinal("LastName")),
+        //                    SlackHandle = reader.GetString(reader.GetOrdinal("SlackHandle"))
+        //                });
+
+        //            }
+        //            reader.Close();
+        //            return students;
+        //        }
+
+        //    }
+        //}
+
+        //private async Task<List<Student>> GetAllStudents()
+        //{
+        //    using (SqlConnection conn = Connection)
+        //    {
+        //        conn.Open();
+        //        using (SqlCommand cmd = conn.CreateCommand())
+        //        {
+        //            cmd.CommandText = @"
+        //                    SELECT id, FirstName, LastName, SlackHandle, CohortId
+        //                    FROM Student
+        //                    ";
+
+        //            SqlDataReader reader = await cmd.ExecuteReaderAsync();
+
+        //            var students = new List<Student>();
+
+        //            while (reader.Read())
+        //            {
+        //                students.Add(new Student
+        //                {
+        //                    Id = reader.GetInt32(reader.GetOrdinal("Id")),
+        //                    CohortId = reader.GetInt32(reader.GetOrdinal("CohortId")),
+        //                    FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
+        //                    LastName = reader.GetString(reader.GetOrdinal("LastName")),
+        //                    SlackHandle = reader.GetString(reader.GetOrdinal("SlackHandle"))
+        //                });
+
+        //            }
+        //            reader.Close();
+        //            return students;
+        //        }
+
+        //    }
+        //}
     }
 }

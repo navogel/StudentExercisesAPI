@@ -41,7 +41,7 @@ namespace StudentExercisesAPI.Models
 
 
         //collection of excercises
-        public List<Exercise> StudentsExercises {get; set;}
+        public List<Exercise> StudentsExercises = new List<Exercise>();
 
     }
 
