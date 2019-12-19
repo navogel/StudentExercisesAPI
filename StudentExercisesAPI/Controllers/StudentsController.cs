@@ -90,7 +90,6 @@ namespace StudentExercisesAPI.Controllers
                                 LastName = reader.GetString(reader.GetOrdinal("LastName")),
                                 FirstName = reader.GetString(reader.GetOrdinal("FirstName")),
                                 SlackHandle = reader.GetString(reader.GetOrdinal("SlackHandle")),
-                               // StudentsExercises = new List<Exercise>(),
                                 Cohort = new Cohort()
                                 {
                                     Name = reader.GetString(reader.GetOrdinal("CohortName")),

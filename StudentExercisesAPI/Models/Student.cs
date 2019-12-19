@@ -19,6 +19,7 @@ namespace StudentExercisesAPI.Models
         [Required]
         public string LastName { get; set; }
         [Required]
+        [StringLength(12, MinimumLength = 3, ErrorMessage = "YO YOU GOT THE WRONG FIGS")]
         public string SlackHandle { get; set; }
 
         public int Id { get; set; }

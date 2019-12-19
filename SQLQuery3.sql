@@ -31,13 +31,20 @@
 --WHERE 1=1;
 
 --instructor query
-SELECT c.Id AS CohortId, c.Name AS CohortName, i.Id, i.FirstName, i.LastName, i.SlackHandle, i.Specialty FROM Instructor i
-                                       LEFT JOIN Cohort c ON i.CohortId = c.Id
+--SELECT c.Id AS CohortId, c.Name AS CohortName, i.Id, i.FirstName, i.LastName, i.SlackHandle, i.Specialty FROM Instructor i
+--                                       LEFT JOIN Cohort c ON i.CohortId = c.Id
 
-                                        WHERE 1=1
+--                                        WHERE 1=1
 
 --exercise query
 --SELECT s.id, s.FirstName, s.LastName, s.SlackHandle, s.CohortId, e.[Name], e.Id as ExerciseId, e.Language
 --                            FROM Student s
 --                            LEFT JOIN StudentExercise se ON s.Id = se.StudentId
 --                            LEFT JOIN Exercise e ON se.ExerciseId = e.Id
+
+--order by after where
+SELECT  i.Id, i.FirstName, i.LastName, i.SlackHandle, i.Specialty, c.Id AS CohortId, c.Name AS CohortName FROM Instructor i
+                                       LEFT JOIN Cohort c ON i.CohortId = c.Id
+
+                                        WHERE 1=1
+                                        ORDER BY i.LastName

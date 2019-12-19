@@ -31,7 +31,7 @@ namespace StudentExercisesAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery]string firstName, [FromQuery]string lastName, [FromQuery] string slackHandle, [FromQuery] string specialty)
+        public async Task<IActionResult> Get([FromQuery]string firstName, [FromQuery]string lastName, [FromQuery] string slackHandle, [FromQuery] string specialty, [FromQuery] string orderBy, [FromQuery] bool desc)
         {
             using (SqlConnection conn = Connection)
             {
@@ -43,28 +43,39 @@ namespace StudentExercisesAPI.Controllers
 
                                         WHERE 1=1";
 
-                    if (firstName != null)
+                    if (!string.IsNullOrWhiteSpace(firstName))
                     {
                         cmd.CommandText += " AND i.FirstName LIKE @FirstName";
                         cmd.Parameters.Add(new SqlParameter(@"FirstName", firstName));
                     }
 
-                    if (lastName != null)
+                    if (!string.IsNullOrWhiteSpace(lastName))
                     {
                         cmd.CommandText += " AND i.LastName LIKE @LastName";
                         cmd.Parameters.Add(new SqlParameter(@"LastName", "%" + lastName + "%"));
                     }
 
-                    if (slackHandle != null)
+                    if (!string.IsNullOrWhiteSpace(slackHandle))
                     {
                         cmd.CommandText += " AND i.SlackHandle LIKE @SlackHandle";
                         cmd.Parameters.Add(new SqlParameter(@"SlackHandle", "%" + slackHandle + "%"));
                     }
 
-                    if (specialty != null)
+                    if (!string.IsNullOrWhiteSpace(specialty))
                     {
                         cmd.CommandText += " AND i.Specialty LIKE @Specialty";
                         cmd.Parameters.Add(new SqlParameter(@"Specialty", "%" + specialty + "%"));
+                    }
+
+                    if (orderBy == "FirstName" || orderBy == "LastName" || orderBy == "SlackHandle" || orderBy == "Specialty" )
+                    {
+                        cmd.CommandText += " ORDER BY @column";
+                        cmd.Parameters.Add(new SqlParameter(@"column", orderBy));
+                    }
+
+                    if (orderBy != null && desc == true)
+                    {
+                        cmd.CommandText += " DESC";
                     }
 
 
@@ -164,14 +175,14 @@ namespace StudentExercisesAPI.Controllers
                 {
                     cmd.CommandText = @"INSERT INTO Instructor (FirstName, LastName, SlackHandle, CohortId, Specialty)
                                         OUTPUT INSERTED.Id
-                                        VALUES (@FirstName, @LastName, @SlackHandle, @CohortId)";
+                                        VALUES (@FirstName, @LastName, @SlackHandle, @CohortId, @Specialty)";
                     cmd.Parameters.Add(new SqlParameter("@FirstName", instructor.FirstName));
                     cmd.Parameters.Add(new SqlParameter("@LastName", instructor.LastName));
                     cmd.Parameters.Add(new SqlParameter("@SlackHandle", instructor.SlackHandle));
                     cmd.Parameters.Add(new SqlParameter("@CohortId", instructor.CohortId));
                     cmd.Parameters.Add(new SqlParameter("@Specialty", instructor.Specialty));
 
-                    int newId = (int)await cmd.ExecuteScalarAsync();
+                    int newId = (int) await cmd.ExecuteScalarAsync();
                     instructor.Id = newId;
                     return CreatedAtRoute("GetInstructor", new { id = newId }, instructor);
                 }
@@ -192,7 +203,7 @@ namespace StudentExercisesAPI.Controllers
                                             SET FirstName = @FirstName,
                                                 LastName = @LastName,
                                                 SlackHandle = @SlackHandle,
-                                                CohortId = @CohortId
+                                                CohortId = @CohortId,
                                                 Specialty = @Specialty
                                             WHERE Id = @id";
                         cmd.Parameters.Add(new SqlParameter("@FirstName", instructor.FirstName));
